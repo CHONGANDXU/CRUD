@@ -17,13 +17,17 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/users")
 @CrossOrigin(origins = "*")
 class UsersController{
     private final UsersServiceImpl usersService;
 
     UsersController(UsersServiceImpl usersService) {
         this.usersService = usersService;
+    }
+
+    @GetMapping("/index")
+    public String index() {
+        return "Hello Spring Security";
     }
 
     @Operation(summary = "UsersController类的check方法，对应/login接口")
