@@ -2,6 +2,7 @@ package com.little.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.little.entity.Miao;
 import com.little.mapper.MiaoMapper;
 import com.little.service.IMiaoService;
@@ -19,7 +20,7 @@ import java.util.List;
  * @since 2023-08-30
  */
 @Service
-public class MiaoServiceImpl implements IMiaoService {
+public class MiaoServiceImpl extends ServiceImpl<MiaoMapper, Miao> implements IMiaoService {
     @Resource
     private final MiaoMapper miaoMapper;
 

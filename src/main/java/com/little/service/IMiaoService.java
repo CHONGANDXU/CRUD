@@ -1,5 +1,6 @@
 package com.little.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.little.entity.Miao;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * @since 2023-08-30
  */
 
-public interface IMiaoService {
+public interface IMiaoService extends IService<Miao> {
 
     List<Miao> search(String chineseTerm, String currentPage, String pageSize);
 

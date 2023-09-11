@@ -1,6 +1,9 @@
 package com.little.service;
 
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.little.entity.Who;
+
 /**
  * <p>
  *  服务类
@@ -9,7 +12,7 @@ package com.little.service;
  * @author FrankCheng
  * @since 2023-08-30
  */
-public interface IWhoService{
+public interface IWhoService extends IService<Who> {
 
 
 }

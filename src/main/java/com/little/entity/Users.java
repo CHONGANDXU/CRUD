@@ -3,9 +3,12 @@ package com.little.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -18,18 +21,28 @@ import java.util.Date;
 
 @Data
 @Schema(title = "Users对象", description = "Login时使用的users表")
-public class Users implements Serializable {
+public class Users implements UserDetails {
 
     @Schema(title="ID")
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     @Schema(title="用户名")
+    @TableField("username")
     private String username;
 
     @Schema(title="密码")
-    @TableField("`password`")
+    @TableField("password")
     private String password;
+
+    @Schema(title = "允许")
+    @TableField("enabled")
+    private Boolean enabled;
+
+    // 此参数在表中并不存在
+    @Schema(title = "权限")
+    @TableField(exist = false)
+    private List<GrantedAuthority> authorityList;
 
     @Schema(title="逻辑删除")
     @TableLogic
@@ -45,4 +58,29 @@ public class Users implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorityList;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
