@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author FrankCheng
@@ -19,6 +19,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public interface IUsersService extends IService<Users>, UserDetailsService {
     ResultVO<Object> checkPassword(String username, String password);
 
+    /**
+     * 方法实现根据用户名查询用户对象与用户的权限列表
+     *
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+
+
 }

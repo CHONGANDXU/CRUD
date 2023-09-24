@@ -9,6 +9,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * @author chengchong
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -24,6 +27,7 @@ public class SecurityConfig {
      * defaultSuccessUrl() 登录成功后的跳转页面
      * <p></p>
      * csrf 跨域漏洞防御 disable 关闭
+     * cors 跨域资源共享漏洞防御
      * <p></p>
      * logout 退出账号
      */
@@ -36,26 +40,23 @@ public class SecurityConfig {
                 .requestMatchers("/miao/insert").hasAuthority("admin:api")
                 .requestMatchers("/miao/search").hasAnyAuthority("admin:api", "user:api")
                 .requestMatchers("/miao/total").hasAnyAuthority("admin:api", "user:api")
-                .anyRequest().authenticated()
         );
 
         http.formLogin(formLogin -> formLogin
-                .loginProcessingUrl("/login")
                 .successHandler((request, response, authentication) -> {
                     response.setContentType("text/html;charset=UTF-8");
-                    response.getWriter().write("loginSuccess");
                     System.out.println("authentication.getCredentials() =" + authentication.getCredentials());
                     System.out.println("authentication.getPrincipal() =" + authentication.getPrincipal());
                     System.out.println("authentication.getAuthorities() =" + authentication.getAuthorities());
                 })
                 .failureHandler((request, response, exception) -> {
                     response.setContentType("text/html;charset=UTF-8");
-                    response.getWriter().write("LoginERROR");
                     System.out.println("登录异常信息:");
                     System.out.println(exception.getCause().getMessage());
                 })
         );
 
+        http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.logout(logout -> logout.invalidateHttpSession(true));
@@ -63,6 +64,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // 可自定义类实现，此处采用了官方写好的BCrypt强散列密码加密方式
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

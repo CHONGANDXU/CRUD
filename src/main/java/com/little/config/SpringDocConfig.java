@@ -8,11 +8,14 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author chengchong
+ */
 @Configuration
 public class SpringDocConfig {
 
     @Bean
-    public OpenAPI tinyOpenAPI() {
+    public OpenAPI tinyOpenApi() {
         return new OpenAPI()
                 .info(new Info().title("Crud-System API")
                         .description("SpringDoc API 演示")

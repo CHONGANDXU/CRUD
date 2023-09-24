@@ -35,8 +35,10 @@ class UsersController{
     @PostMapping("/login")
     @ResponseBody
     public ResultVO<Object> check(@RequestBody Map<String, String> map) {
+        System.out.println("==========UsersController的check方法执行啦==========");
         String userName = map.get("userName");
         String passWord = map.get("passWord");
+        System.out.println("userName=" + userName + '\n' + "passWord=" + passWord);
         return usersService.checkPassword(userName,passWord);
     }
 }

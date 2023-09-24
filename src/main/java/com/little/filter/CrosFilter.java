@@ -7,6 +7,9 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author chengchong
+ */
 @WebFilter(filterName = "crosFilter", urlPatterns = {"/*"})
 public class CrosFilter implements Filter {
     // 重写其中的doFilter方法

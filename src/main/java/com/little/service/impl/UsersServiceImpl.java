@@ -2,14 +2,13 @@ package com.little.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.little.entity.Authorities;
+import com.little.entity.Permission;
 import com.little.entity.Users;
-import com.little.mapper.AuthoritiesMapper;
+import com.little.mapper.PermissionMapper;
 import com.little.mapper.UsersMapper;
 import com.little.service.IUsersService;
 import com.little.vo.ResultVO;
 import jakarta.annotation.Resource;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -33,11 +32,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     private final UsersMapper usersMapper;
 
     @Resource
-    private final AuthoritiesMapper authoritiesMapper;
+    private final PermissionMapper permissionMapper;
 
-    public UsersServiceImpl(UsersMapper usersMapper, AuthoritiesMapper authoritiesMapper) {
+    public UsersServiceImpl(UsersMapper usersMapper, PermissionMapper permissionMapper) {
         this.usersMapper = usersMapper;
-        this.authoritiesMapper = authoritiesMapper;
+        this.permissionMapper = permissionMapper;
     }
 
     @Override
@@ -64,18 +63,18 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        QueryWrapper<Users> usersQueryWrapperWrapper = new QueryWrapper<>();
-        usersQueryWrapperWrapper.eq("username", username);
-        Users user = usersMapper.selectOne(usersQueryWrapperWrapper);
+        QueryWrapper<Users> usersQueryWrapper = new QueryWrapper<>();
+        usersQueryWrapper.eq("username", username);
+        Users user = usersMapper.selectOne(usersQueryWrapper);
         if (null == user) {
             throw new UsernameNotFoundException("用户不存在，请检查您输入的账号！！！");
         }
 
-        QueryWrapper<Authorities> authoritiesQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<Permission> authoritiesQueryWrapper = new QueryWrapper<>();
         authoritiesQueryWrapper.eq("username", user.getUsername());
-        List<Authorities> authoritiesList = authoritiesMapper.selectList(authoritiesQueryWrapper);
-        List<String> stringList = authoritiesList.stream().map(Authorities::getAuthority).toList();
-        user.setAuthorityList(AuthorityUtils.createAuthorityList(stringList));
+        List<Permission> authoritiesList = permissionMapper.selectList(authoritiesQueryWrapper);
+        List<String> stringList = authoritiesList.stream().map(Permission::getPermit).toList();
+        // user.setAuthorityList(AuthorityUtils.createAuthorityList(stringList));
         return user;
     }
 }
