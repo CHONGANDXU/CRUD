@@ -7,6 +7,7 @@ import com.little.entity.Users;
 import com.little.mapper.AuthoritiesMapper;
 import com.little.mapper.UsersMapper;
 import com.little.service.IUsersService;
+import com.little.vo.ResultVO;
 import jakarta.annotation.Resource;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,28 +41,25 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
-    public Map<String, Object> checkPassword(String username, String password){
+    public ResultVO<Object> checkPassword(String username, String password) {
         Map<String,Object> user=new HashMap<>();
         user.put("username",username);
         List<Users> users = usersMapper.selectByMap(user);
+        ResultVO<Object> resultVO = new ResultVO<>();
         if(users.isEmpty()){
-            Map<String,Object> response=new HashMap<>();
-            response.put("code",1);
-            response.put("msg","账号不存在，请检查您输入的账号！！！");
-            return response;
+            resultVO.setCode(1);
+            resultVO.setMessage("账号不存在，请检查您输入的账号！！！");
         }else{
             Users users1 = users.get(0);
-            Map<String,Object> response=new HashMap<>();
             if(Objects.equals(password, users1.getPassword())){
-                response.put("code",0);
-                response.put("msg","登录成功！！！");
+                resultVO.setCode(0);
+                resultVO.setMessage("登录成功！！！");
             }else{
-                response.put("code",1);
-                response.put("msg","密码错误，请重新输入密码！！！");
+                resultVO.setCode(1);
+                resultVO.setMessage("密码错误，请重新输入密码！！！");
             }
-            return response;
         }
-
+        return resultVO;
     }
 
     @Override
@@ -78,6 +76,6 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         List<Authorities> authoritiesList = authoritiesMapper.selectList(authoritiesQueryWrapper);
         List<String> stringList = authoritiesList.stream().map(Authorities::getAuthority).toList();
         user.setAuthorityList(AuthorityUtils.createAuthorityList(stringList));
-        return null;
+        return user;
     }
 }
