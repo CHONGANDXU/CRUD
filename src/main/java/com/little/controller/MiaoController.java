@@ -2,10 +2,12 @@ package com.little.controller;
 
 import com.little.entity.Miao;
 import com.little.service.impl.MiaoServiceImpl;
+import com.little.vo.ResultVO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,87 +33,95 @@ class MiaoController {
     @Operation(summary = "MiaoController类的search方法，对应/search接口")
     @GetMapping(value = "/search")
     @ResponseBody
-    public Map<String, Object> search(@RequestParam("chineseTerm") String chineseTerm,
-                                      @RequestParam("pageSize") String pageSize,
-                                      @RequestParam("currentPage") String currentPage) {
+    public ResultVO<List<Miao>> search(@RequestParam("chineseTerm") String chineseTerm,
+                                       @RequestParam("pageSize") String pageSize,
+                                       @RequestParam("currentPage") String currentPage) {
         // System.out.println("==================MiaoController中的方法使用啦====================");
         System.out.println(chineseTerm + " " + pageSize + " " + currentPage);
-        Map<String, Object> map1 = new HashMap<>();
-        map1.put("data", miaoService.search(chineseTerm, currentPage, pageSize));
-        map1.put("code", 1);
-        return map1;
+        List<Miao> search = miaoService.search(chineseTerm, currentPage, pageSize);
+
+        ResultVO<List<Miao>> listResultVO = new ResultVO<>();
+        if (search.isEmpty()) {
+            listResultVO.fail("查询失败，数据库中没有匹配数据");
+        } else {
+            listResultVO.success("查询成功");
+            listResultVO.add(search);
+        }
+        return listResultVO;
     }
 
     @Operation(summary = "MiaoController类的getTotalCount方法，对应/total接口")
     @GetMapping(value = "/total")
     @ResponseBody
-    public Map<String, Map<String, Long>> getTotalCount(@RequestParam("chineseTerm") String chineseTerm) {
-        Map<String, Long> map1 = new HashMap<>();
-        map1.put("count", miaoService.getTotalCount(chineseTerm));
-        Map<String, Map<String, Long>> map2 = new HashMap<>();
-        map2.put("data", map1);
-        return map2;
+    public ResultVO<Map<String, Long>> getTotalCount(@RequestParam("chineseTerm") String chineseTerm) {
+        Long totalCount = miaoService.getTotalCount(chineseTerm);
+
+        ResultVO<Map<String, Long>> mapResultVO = new ResultVO<>();
+        if (totalCount == 0L) {
+            mapResultVO.fail("查询结果为无，请更换您需要查询的条件!!!");
+        } else {
+            mapResultVO.success("查询成功");
+        }
+        Map<String, Long> map = new HashMap<>();
+        map.put("count", totalCount);
+        mapResultVO.add(map);
+        return mapResultVO;
     }
 
     @Operation(summary = "MiaoController类的deleteById方法，对应/delete接口")
     @GetMapping(value = "/delete")
     @ResponseBody
-    public Map<String, Object> deleteById(@RequestParam("code") String code) {
+    public ResultVO<Miao> deleteById(@RequestParam("code") String code) {
         int affectedRows = miaoService.deleteById(code);
-        Map<String, Object> map = new HashMap<>();
+
+        ResultVO<Miao> miaoResultVO = new ResultVO<>();
         if (affectedRows != 0) {
-            map.put("code", 0);
-            map.put("msg", "删除成功");
+            miaoResultVO.success("删除成功");
         } else {
-            map.put("code", 1);
-            map.put("msg", "删除失败");
+            miaoResultVO.fail("删除失败");
         }
-        return map;
+        return miaoResultVO;
     }
 
     @Operation(summary = "MiaoController类的insertOne方法，对应/insert接口")
     @PostMapping(value = "/insert")
     @ResponseBody
-    public Map<String, Object> insertOne(@RequestBody Map<String, Object> map) {
+    public ResultVO<Miao> insertOne(@RequestBody Map<String, Object> map) {
         System.out.println(map);
         Miao entityMiao = getEntityMiao(map);
         System.out.println(entityMiao);
         int affectedRows = miaoService.insertOne(getEntityMiao(map));
-        System.out.println("insertAffectedRows "+affectedRows);
+        System.out.println("insertAffectedRows " + affectedRows);
 
-        Map<String, Object> responseMap = new HashMap<>();
+        ResultVO<Miao> miaoResultVO = new ResultVO<>();
         if (affectedRows != 0) {
-            responseMap.put("code", 0);
-            responseMap.put("msg", "添加成功");
+            miaoResultVO.success("增加成功");
         } else {
-            responseMap.put("code", 1);
-            responseMap.put("msg", "添加失败");
+            miaoResultVO.fail("增加失败");
         }
-        return responseMap;
+        return miaoResultVO;
     }
 
     @Operation(summary = "MiaoController类的update方法，对应/update接口")
     @PostMapping("/update")
     @ResponseBody
-    public Map<String, Object> update(@RequestBody Map<String, Object> map){
+    public ResultVO<Miao> update(@RequestBody Map<String, Object> map) {
         System.out.println(map);
         Miao entityMiao = getEntityMiao(map);
         System.out.println(entityMiao);
         int affectedRows = miaoService.update(entityMiao);
-        System.out.println("insertAffectedRows "+affectedRows);
+        System.out.println("insertAffectedRows " + affectedRows);
 
-        Map<String, Object> responseMap = new HashMap<>();
+        ResultVO<Miao> miaoResultVO = new ResultVO<>();
         if (affectedRows != 0) {
-            responseMap.put("code", 0);
-            responseMap.put("msg", "修改成功");
+            miaoResultVO.success("修改成功");
         } else {
-            responseMap.put("code", 1);
-            responseMap.put("msg", "修改失败");
+            miaoResultVO.fail("修改失败");
         }
-        return responseMap;
+        return miaoResultVO;
     }
 
-    @Operation(summary="从ResponseBody中接收并初始化一个Miao实体类")
+    @Operation(summary = "从ResponseBody中接收并初始化一个Miao实体类")
     private Miao getEntityMiao(Map<String, Object> map) {
         Miao miao = new Miao();
 
@@ -125,36 +135,34 @@ class MiaoController {
         String synonyms = map.get("synonyms") == null ? "" : map.get("synonyms").toString();
         String source = map.get("source") == null ? "" : map.get("source").toString();
 
-        if(!code.isEmpty()){
+        if (!code.isEmpty()) {
             miao.setCode(Integer.parseInt(code));
         }
-        if(!englishDefinitionDescription.isEmpty()){
+        if (!englishDefinitionDescription.isEmpty()) {
             miao.setEnglishDefinitionDescription(englishDefinitionDescription);
         }
-        if(!chineseTerm.isEmpty()){
-           miao.setChineseTerm(chineseTerm);
+        if (!chineseTerm.isEmpty()) {
+            miao.setChineseTerm(chineseTerm);
         }
-        if(!pinyinTerm.isEmpty()) {
+        if (!pinyinTerm.isEmpty()) {
             miao.setPinyinTerm(pinyinTerm);
         }
-        if(!chineseSynonyms.isEmpty()) {
+        if (!chineseSynonyms.isEmpty()) {
             miao.setSynonyms(chineseSynonyms);
         }
-        if(!miaoLanguage.isEmpty()) {
+        if (!miaoLanguage.isEmpty()) {
             miao.setMiaoLanguage(miaoLanguage);
         }
-        if(!englishTerm.isEmpty()) {
+        if (!englishTerm.isEmpty()) {
             miao.setEnglishTerm(englishTerm);
         }
-        if(!synonyms.isEmpty()) {
+        if (!synonyms.isEmpty()) {
             miao.setSynonyms(synonyms);
         }
-        if(!source.isEmpty()){
+        if (!source.isEmpty()) {
             miao.setSource(source);
         }
-
         return miao;
     }
-
 }
 

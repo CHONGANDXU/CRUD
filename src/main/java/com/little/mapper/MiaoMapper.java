@@ -1,7 +1,7 @@
 package com.little.mapper;
 
-import com.little.entity.Miao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.little.entity.Miao;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -14,8 +14,9 @@ import org.springframework.stereotype.Repository;
  * @since 2023-08-30
  */
 
-@Mapper
+
 @Repository
+@Mapper
 public interface MiaoMapper extends BaseMapper<Miao>{
 
 }
