@@ -5,11 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
-/**
- * Hello world!
- *
- */
-@MapperScan("com.little.mapper")
+@MapperScan(basePackages = "com.little.mapper")
 @SpringBootApplication
 @ServletComponentScan
 public class CrudSystem {
